@@ -146,21 +146,9 @@ Requset:
 <br/>
 <hr/>
 
-
 </h3>
 
-
-
-
-
 </br>
-</br>
-</br>
-</br>
-</br>
-
-
-
 
 
 <h2>
@@ -171,7 +159,7 @@ Requset:
   URL-шаблон указывающий на файл urls.py внутри приложения 'src.oauth', который содержит пути к представлениям для регистрации, входа, обновления профиля пользователя и другим функциям, связанным с учетными записями пользователей
 </h3>
 
-
+<br/>
 <br/>
 <hr/>
 
@@ -182,7 +170,6 @@ Requset:
 <h4>
     Отвечает за обновление информации о пользователе. При обращении к этому URL пользователь может изменять свои данные или профиль
 </h4>
-
 <br/>
 
 Headers:
@@ -384,15 +371,6 @@ Requset:
 
 </h3>
 
-
-
-
-
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
 <br/>
 
 
@@ -400,5 +378,5 @@ Requset:
 
 
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=d179b8&height=64&section=footer"/>
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=d179b8&height=90&section=footer"/>
 </p>
