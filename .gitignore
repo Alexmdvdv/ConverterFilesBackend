@@ -168,3 +168,6 @@ poetry.toml
 pyrightconfig.json
 
 .DS_Store
+
+.vscode
+.venv-file-converter
