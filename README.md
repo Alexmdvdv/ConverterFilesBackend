@@ -9,6 +9,45 @@
 
 
 <h2>
+  💾 DTOs
+</h2>
+
+<h3>
+  В этом разделе собраны все Data Transfer Objects проекта
+</h3>
+
+<br/>
+<hr/>
+
+<h3>
+    
+`user_dto`
+
+</h3>
+<h4>
+    Объект пользователя
+</h4>
+
+<br/>
+
+```
+{
+    username: string,
+    email: string,
+}
+```
+
+
+<br/>
+<hr/>
+
+
+
+<br/>
+
+
+
+<h2>
   📁 FILES API
 </h2>
 
@@ -35,18 +74,19 @@
 Headers:
 ```
 {
-    Cookie: token="your_token"
-    Authorization: Bearer "your_token"
+    Cookie: token="your_token",
+    Authorization: Bearer "your_token",
 }
 ```
+
 <br/>
 
 Requset:
 ```
 {
-    "file_path": [Binary data of the file],
-    "to": str (Выходной формат файла),
-    "id": int (Идентификатор пользователя),
+    file_path: [Binary data of the file],
+    to: str (Выходной формат файла),
+    id: int (Идентификатор пользователя),
 }
 ```
 
@@ -55,7 +95,7 @@ Requset:
 Response:
 ```
 {
-    "file_url": url 
+    file_url: string (ссылка на скачивание файла),
 }
 ```
 
@@ -78,8 +118,8 @@ Response:
 Headers:
 ```
 {
-    Cookie: token="your_token"
-    Authorization: Bearer "your_token"
+    Cookie: token="your_token",
+    Authorization: Bearer "your_token",
 }
 ```
 
@@ -88,20 +128,18 @@ Headers:
 Requset:
 ```
 {
-    pk: int  (Идентификатор файла, который требуется скачать)
+    pk: int  (Идентификатор файла, который требуется скачать),
 }
 ```
 
 <br/>
 
+> Должна возвращаться ссылка на файл
+> 
 Response:
 ```
 {
-    HTTP/1.1 200 OK
-    Content-Type: application/octet-stream
-    Content-Disposition: attachment; filename="your_filename"
-
-    [Binary data of the file]
+    file_url: string (ссылка на скачивание файла),
 }
 ```
 
@@ -124,8 +162,8 @@ Response:
 Headers:
 ```
 {
-    Cookie: token="your_token"
-    Authorization: Bearer "your_token"
+    Cookie: token="your_token",
+    Authorization: Bearer "your_token",
 }
 ```
 
@@ -134,26 +172,28 @@ Headers:
 Requset:
 ```
 {    
-    pk: int  (Идентификатор файла, который требуется удалить)
+    pk: int  (Идентификатор файла, который требуется удалить),
 }
 ```
 
 <br/>
 
+> Должно возвращаться сообщение об удачном или неудачном удалении
+> 
 Response:
 ```
 {
-    "Файл успешно удален"
-    HTTP/1.1 204 No Content
+    message: string,
 }
 ```
 
 <br/>
 <hr/>
 
-</h3>
+
 
 </br>
+
 
 
 <h2>
@@ -164,7 +204,7 @@ Response:
   URL-шаблон указывающий на файл urls.py внутри приложения 'src.oauth', который содержит пути к представлениям для регистрации, входа, обновления профиля пользователя и другим функциям, связанным с учетными записями пользователей
 </h3>
 
-<br/>
+
 <br/>
 <hr/>
 
@@ -182,8 +222,8 @@ Response:
 Headers:
 ```
 {
-    Cookie: token="your_token"
-    Authorization: Bearer "your_token"
+    Cookie: token="your_token",
+    Authorization: Bearer "your_token",
 }
 ```
 
@@ -192,9 +232,9 @@ Headers:
 Requset:
 ```
 {
-    "user": {
-        "username": str (Имя пользователя)
-        "email": str (Email пользователя)
+    user: {
+        username: string (Имя пользователя),
+        email: string (Email пользователя),
     }
 }
 ```
@@ -204,8 +244,8 @@ Requset:
 Response:
 ```
 {
-    "username": str (Измененное имя),
-    "email": str (Измененный Email)
+    username: string (Измененное имя),
+    email: string (Измененный Email),
 }
 ```
 
@@ -229,10 +269,10 @@ Response:
 Requset:
 ```
 {
-    "user": {
-    "username": str,
-    "email": str,
-    "password": str
+    user: {
+        username: string,
+        email: string,
+        password: string,
     }
 }
 ```
@@ -242,7 +282,8 @@ Requset:
 Response:
 ```
 {
-    "access_token": "your_acces_token"
+    access_token: "your_acces_token",
+    user: user_dto,
 }
 ```
 
@@ -265,9 +306,9 @@ Response:
 Requset:
 ```
 {
-    "user": {
-        "username": str, 
-        "password": str
+    user: {
+        username: string, 
+        password: string,
     }
 }
 ```
@@ -277,7 +318,8 @@ Requset:
 Response:
 ```
 {
-    "access_token": "your_acces_token"
+    access_token: "your_acces_token",
+    user: user_dto,
 }
 ```
 
@@ -300,8 +342,8 @@ Response:
 Headers:
 ```
 {
-    Cookie: token="your_token"
-    Authorization: Bearer "your_token"
+    Cookie: token="your_token",
+    Authorization: Bearer "your_token",
 }
 ```
 
@@ -310,7 +352,8 @@ Headers:
 Response:
 ```
 {
-    "access_token": "your_acces_token"
+    access_token: "your_acces_token",
+    user: user_dto,
 }
 ```
 
@@ -332,7 +375,7 @@ Response:
 Requset:
 ```
 {
-    "email": str (Email на который будет отправленна ссылка для сброса)
+    email: string (Email на который будет отправленна ссылка для сброса),
 }
 ```
 
@@ -341,7 +384,7 @@ Requset:
 Response:
 ```
 {
-    url: ссылка для сброса пароля
+    url: string (ссылка для сброса пароля),
 }
 ```
 
@@ -364,8 +407,8 @@ Response:
 Requset:
 ```
 {
-    "new_password": str,
-    "confirm_password": str
+    new_password: string,
+    confirm_password: string,
 }
 ```
 
@@ -374,7 +417,7 @@ Requset:
 Response:
 ```
 {
-    'detail': 'Пароль был сброшен'
+    detail: "Пароль был сброшен",
     HTTP/1.1 200 OK
 }
 ```
@@ -384,8 +427,14 @@ Response:
 <hr/>
 
 
-</h3>
 
+
+
+
+<br/>
+<br/>
+<br/>
+<br/>
 <br/>
 
 
