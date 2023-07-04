@@ -41,21 +41,21 @@ Headers:
 ```
 <br/>
 
-Response:
-```
-{
-    "file_url": url 
-}
-```
-
-<br/>
-
 Requset:
 ```
 {
     "file_path": [Binary data of the file],
     "to": str (Выходной формат файла),
     "id": int (Идентификатор пользователя),
+}
+```
+
+<br/>
+
+Response:
+```
+{
+    "file_url": url 
 }
 ```
 
@@ -85,6 +85,15 @@ Headers:
 
 <br/>
 
+Requset:
+```
+{
+    pk: int  (Идентификатор файла, который требуется скачать)
+}
+```
+
+<br/>
+
 Response:
 ```
 {
@@ -93,15 +102,6 @@ Response:
     Content-Disposition: attachment; filename="your_filename"
 
     [Binary data of the file]
-}
-```
-
-<br/>
-
-Requset:
-```
-{
-    pk: int  (Идентификатор файла, который требуется скачать)
 }
 ```
 
@@ -131,16 +131,6 @@ Headers:
 
 <br/>
 
-Response:
-```
-{
-    "Файл успешно удален"
-    HTTP/1.1 204 No Content
-}
-```
-
-<br/>
-
 Requset:
 ```
 {    
@@ -148,6 +138,15 @@ Requset:
 }
 ```
 
+<br/>
+
+Response:
+```
+{
+    "Файл успешно удален"
+    HTTP/1.1 204 No Content
+}
+```
 
 <br/>
 <hr/>
@@ -190,16 +189,6 @@ Headers:
 
 <br/>
 
-Response:
-```
-{
-    "username": str (Измененное имя),
-    "email": str (Измененный Email)
-}
-```
-
-<br/>
-
 Requset:
 ```
 {
@@ -207,6 +196,16 @@ Requset:
         "username": str (Имя пользователя)
         "email": str (Email пользователя)
     }
+}
+```
+
+<br/>
+
+Response:
+```
+{
+    "username": str (Измененное имя),
+    "email": str (Измененный Email)
 }
 ```
 
@@ -227,15 +226,6 @@ Requset:
 
 <br/>
 
-Response:
-```
-{
-    "access_token": "your_acces_token"
-}
-```
-
-<br/>
-
 Requset:
 ```
 {
@@ -244,6 +234,15 @@ Requset:
     "email": str,
     "password": str
     }
+}
+```
+
+<br/>
+
+Response:
+```
+{
+    "access_token": "your_acces_token"
 }
 ```
 
@@ -263,16 +262,6 @@ Requset:
 
 <br/>
 
-
-Response:
-```
-{
-    "access_token": "your_acces_token"
-}
-```
-
-<br/>
-
 Requset:
 ```
 {
@@ -280,6 +269,15 @@ Requset:
         "username": str, 
         "password": str
     }
+}
+```
+
+<br/>
+
+Response:
+```
+{
+    "access_token": "your_acces_token"
 }
 ```
 
@@ -329,6 +327,14 @@ Response:
     Обрабатывает запросы на сброс пароля и отправляет соответствующую информацию по электронной почте
 </h4>
 
+<br/>
+
+Requset:
+```
+{
+    "email": str (Email на который будет отправленна ссылка для сброса)
+}
+```
 
 <br/>
 
@@ -336,15 +342,6 @@ Response:
 ```
 {
     url: ссылка для сброса пароля
-}
-```
-
-<br/>
-
-Requset:
-```
-{
-    "email": str (Email на который будет отправленна ссылка для сброса)
 }
 ```
 
@@ -364,21 +361,21 @@ Requset:
 
 <br/>
 
-Response:
-```
-{
-    'detail': 'Пароль был сброшен'
-    HTTP/1.1 200 OK
-}
-```
-
-<br/>
-
 Requset:
 ```
 {
     "new_password": str,
     "confirm_password": str
+}
+```
+
+<br/>
+
+Response:
+```
+{
+    'detail': 'Пароль был сброшен'
+    HTTP/1.1 200 OK
 }
 ```
 
