@@ -147,7 +147,10 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
-CORS_ALLOWED_ORIGINS = []
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'https://eelisey.ru',
+]
 
 LANGUAGE_CODE = 'ru'
 TIME_ZONE = 'Asia/Yekaterinburg'
