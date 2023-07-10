@@ -214,7 +214,7 @@ Response:
 
 <h3>
     
-🟣 PATCH `api_url/user/udate/`
+🟣 PATCH `api_url/user/update/`
 
 </h3>
 <h4>
