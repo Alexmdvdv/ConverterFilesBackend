@@ -147,10 +147,13 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
+# CORS_ALLOW_ALL_ORIGINS = True | если решим сделать открытый апи
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'https://eelisey.ru',
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = [
     'Access-Control-Allow-Headers',
