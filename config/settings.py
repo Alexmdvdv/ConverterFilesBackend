@@ -156,8 +156,12 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = [
-    'Access-Control-Allow-Headers',
-    'Access-Control-Allow-Credentials',
+    'content-disposition',
+    'accept-encoding',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
 ]
 
 LANGUAGE_CODE = 'ru'
