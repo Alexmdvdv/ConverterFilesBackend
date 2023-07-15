@@ -345,8 +345,7 @@ Response:
 Headers:
 ```
 {
-    Cookie: token="your_token",
-    Authorization: Bearer "your_token",
+    Cookie: token="your_token" (никакие действия с куками на фронте не нужно делать),
 }
 ```
 
