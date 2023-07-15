@@ -152,6 +152,11 @@ CORS_ALLOWED_ORIGINS = [
     'https://eelisey.ru',
 ]
 
+CORS_ALLOW_HEADERS = [
+    'Access-Control-Allow-Headers',
+    'Access-Control-Allow-Credentials',
+]
+
 LANGUAGE_CODE = 'ru'
 TIME_ZONE = 'Asia/Yekaterinburg'
 
