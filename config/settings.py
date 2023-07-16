@@ -162,6 +162,12 @@ CORS_ALLOW_HEADERS = [
     'accept',
     'origin',
     'authorization',
+    'field-x-requested-with',
+    'cache-control',
+    'dnt',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
 ]
 
 LANGUAGE_CODE = 'ru'
