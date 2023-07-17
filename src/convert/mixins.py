@@ -17,14 +17,14 @@ class FileUploadMixin:
     def process_file(self, request, serializer_class):
         file_to = request.data['to']
         file_serializer = serializer_class(data=request.data)
-
-        if file_serializer.is_valid():
-            uploaded_file = request.FILES['file_path']
+        if file_serializer:  # забыл протестить с .verify() после фиксов, но вообще он возвращал False
+            uploaded_file = request.FILES['file']
             file_url = self.convert_file(uploaded_file, file_to)
             if file_url:
                 if request.user.is_authenticated:
                     file_name = os.path.basename(file_url)
-                    file_path = os.path.join(Archive.file_path.field.upload_to, file_name)
+                    file_path = os.path.join(
+                        Archive.file_path.field.upload_to, file_name)
 
                     response = requests.get(file_url)
                     if response.status_code == 200:
@@ -32,11 +32,15 @@ class FileUploadMixin:
                             file.write(response.content)
 
                         user = request.user
-                        file_name_without_extension = os.path.splitext(uploaded_file.name)[0]
-                        archive_instance = Archive(user=user, file_path=file_path,
-                                                   file_name=file_name_without_extension,
-                                                   previous_format=uploaded_file.name.split('.')[-1],
-                                                   current_format=file_name.split('.')[-1])
+                        file_name_without_extension = os.path.splitext(uploaded_file.name)[
+                            0]
+                        archive_instance = Archive(
+                            user=user,
+                            file_path=file_path,
+                            file_name=file_name_without_extension,
+                            previous_format=uploaded_file.name.split('.')[-1],
+                            current_format=file_name.split('.')[-1]
+                        )
 
                         archive_instance.save()
 

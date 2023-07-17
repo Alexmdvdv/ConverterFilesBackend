@@ -47,7 +47,10 @@ class FileDownloadView(View):
             with open(file_path, 'rb') as file:
                 file_data = file.read()
 
-            response = HttpResponse(file_data, content_type='application/octet-stream')
+            response = HttpResponse(
+                file_data,
+                content_type='application/octet-stream'
+            )
             response['Content-Disposition'] = 'attachment; filename=' + file_field.name
             return response
         except Exception as e:

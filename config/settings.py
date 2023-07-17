@@ -11,7 +11,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+]
 
 INSTALLED_APPS = [
     'corsheaders',
@@ -145,7 +147,28 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
-CORS_ALLOWED_ORIGINS = []
+# CORS_ALLOW_ALL_ORIGINS = True | если решим сделать открытый апи
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'https://eelisey.ru',
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    'content-disposition',
+    'accept-encoding',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'field-x-requested-with',
+    'cache-control',
+    'dnt',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 LANGUAGE_CODE = 'ru'
 TIME_ZONE = 'Asia/Yekaterinburg'

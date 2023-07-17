@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from django.contrib.auth.tokens import default_token_generator
@@ -15,8 +16,10 @@ from src.oauth.mixins import TokenCookieMixin
 from src.oauth.models import User
 from src.oauth.serializers import (
     UserRegistrationSerializer, UserLoginSerializer, UserUpdateSerializer,
-    PasswordResetSerializer, PasswordResetConfirmSerializer)
+    PasswordResetSerializer, PasswordResetConfirmSerializer, UserSerializer)
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+
+JWT_Auth = JWTAuthentication()
 
 
 class RegisterView(TokenCookieMixin, APIView):
@@ -32,7 +35,12 @@ class RegisterView(TokenCookieMixin, APIView):
         access_token = refresh_token.access_token
         refresh_token.verify()
 
-        response = Response({"access_token": str(access_token)}, status=status.HTTP_201_CREATED)
+        user_dto = UserSerializer(user).data
+
+        response = Response(
+            {"access_token": str(access_token), 'user': user_dto},
+            status=status.HTTP_201_CREATED
+        )
         self.set_token_cookie(response, refresh_token)
 
         return response
@@ -51,7 +59,12 @@ class LoginView(TokenCookieMixin, APIView):
         access_token = refresh_token.access_token
         refresh_token.verify()
 
-        response = Response({"access_token": str(access_token)}, status=status.HTTP_201_CREATED)
+        user_dto = UserSerializer(user).data
+
+        response = Response(
+            {"access_token": str(access_token), 'user': user_dto},
+            status=status.HTTP_201_CREATED
+        )
         self.set_token_cookie(response, refresh_token)
 
         return response
@@ -71,7 +84,7 @@ class LogoutView(APIView):
             except Exception:
                 pass
 
-        response = Response({'detail': 'Вы успешно вышли из системы.'}, status=status.HTTP_200_OK)
+        response = Response({'detail': 'Вы успешно вышли из системы'}, status=status.HTTP_200_OK)
         response.delete_cookie('token')
 
         return response
@@ -93,9 +106,9 @@ class UpdateUserView(APIView):
 
 
 class TokenRefreshView(TokenCookieMixin, APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
-    def post(self, request):
+    def get(self, request):
         token = request.COOKIES.get('token')
 
         if not token:
@@ -106,7 +119,13 @@ class TokenRefreshView(TokenCookieMixin, APIView):
             access_token = refresh_token.access_token
             refresh_token.verify()
 
-            response = Response({"access_token": str(access_token)}, status=200)
+            user = JWT_Auth.get_user(access_token)
+            user_dto = UserSerializer(user).data
+
+            response = Response(
+                {"access_token": str(access_token), 'user': user_dto},
+                status=status.HTTP_201_CREATED
+            )
             self.set_token_cookie(response, refresh_token)
             return response
 
@@ -134,7 +153,8 @@ class PasswordResetAPIView(APIView):
             token = default_token_generator.make_token(user)
             uid = user.pk
 
-            reset_url = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+            reset_url = reverse('password_reset_confirm', kwargs={
+                'uidb64': uid, 'token': token})
             reset_url = request.build_absolute_uri(reset_url)
 
             user.password_reset_token = timezone.localtime()
@@ -170,7 +190,8 @@ class PasswordResetConfirmAPIView(APIView):
                 expiration_time = timedelta(hours=1)
 
                 if time_difference <= expiration_time:
-                    new_password = serializer.validated_data.get('new_password')
+                    new_password = serializer.validated_data.get(
+                        'new_password')
                     user.set_password(new_password)
                     user.save()
 
