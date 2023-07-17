@@ -20,11 +20,6 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 
 class RegisterView(TokenCookieMixin, APIView):
-    """{
-    "user": {"username": "..",
-    "email": "..",
-    "password": ".."}
-    }"""
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -44,10 +39,6 @@ class RegisterView(TokenCookieMixin, APIView):
 
 
 class LoginView(TokenCookieMixin, APIView):
-    """{
-        "user": {"username": "..",
-        "password": ".."}
-        }"""
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -66,13 +57,27 @@ class LoginView(TokenCookieMixin, APIView):
         return response
 
 
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @staticmethod
+    def post(request):
+        refresh_token = request.COOKIES.get('token')
+
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            except Exception:
+                pass
+
+        response = Response({'detail': 'Вы успешно вышли из системы.'}, status=status.HTTP_200_OK)
+        response.delete_cookie('token')
+
+        return response
+
+
 class UpdateUserView(APIView):
-    """{
-        "user": {
-        "username": "..",
-        "email": "..",
-        }
-        }"""
     permission_classes = [IsAuthenticated]
 
     @staticmethod
@@ -88,10 +93,6 @@ class UpdateUserView(APIView):
 
 
 class TokenRefreshView(TokenCookieMixin, APIView):
-    """
-    Cookie: {token="refresh_token"},
-    Authorization: {Bearer "acces_token"}
-    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -117,9 +118,6 @@ class TokenRefreshView(TokenCookieMixin, APIView):
 
 
 class PasswordResetAPIView(APIView):
-    """{
-    "email": ".."
-    }"""
     permission_classes = [AllowAny]
 
     @staticmethod
@@ -153,10 +151,6 @@ class PasswordResetAPIView(APIView):
 
 
 class PasswordResetConfirmAPIView(APIView):
-    """{
-        "new_password": "..",
-        "confirm_password": ".."
-    }"""
     permission_classes = [AllowAny]
 
     @staticmethod

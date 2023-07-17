@@ -23,7 +23,7 @@
 
 <h3>
     api_url/file/upload/
-    
+
 <h4>
     Загрузка файла на сервер и дальнейшая его обработка
 </h4>
@@ -31,15 +31,18 @@
 <br/>
 
 Headers:
+
 ```
 {
     Cookie: token="your_token"
     Authorization: Bearer "your_token"
 }
 ```
+
 <br/>
 
 Response:
+
 ```
 {
     "file_url": url 
@@ -49,6 +52,7 @@ Response:
 <br/>
 
 Requset:
+
 ```
 {
     "file_path": [Binary data of the file],
@@ -57,14 +61,13 @@ Requset:
 }
 ```
 
-
 <br/>
 <hr/>
 
 
 <h3>
     api_url/file/download/int:file_id/
-    
+
 <h4>
    Скачивание файла для авторизованных пользователей
 </h4>
@@ -72,6 +75,7 @@ Requset:
 <br/>
 
 Headers:
+
 ```
 {
     Cookie: token="your_token"
@@ -82,6 +86,7 @@ Headers:
 <br/>
 
 Response:
+
 ```
 {
     HTTP/1.1 200 OK
@@ -95,12 +100,12 @@ Response:
 <br/>
 
 Requset:
+
 ```
 {
     pk: int  (Идентификатор файла, который требуется скачать)
 }
 ```
-
 
 <br/>
 <hr/>
@@ -108,7 +113,7 @@ Requset:
 
 <h3>
     api_url/file/delete/int:pk/
-    
+
 <h4>
     Удаление файла для авторизованных пользователей
 </h4>
@@ -116,6 +121,7 @@ Requset:
 <br/>
 
 Headers:
+
 ```
 {
     Cookie: token="your_token"
@@ -126,6 +132,7 @@ Headers:
 <br/>
 
 Response:
+
 ```
 {
     "Файл успешно удален"
@@ -136,12 +143,12 @@ Response:
 <br/>
 
 Requset:
+
 ```
 {    
     pk: int  (Идентификатор файла, который требуется удалить)
 }
 ```
-
 
 <br/>
 <hr/>
@@ -173,6 +180,7 @@ Requset:
 <br/>
 
 Headers:
+
 ```
 {
     Cookie: token="your_token"
@@ -183,6 +191,7 @@ Headers:
 <br/>
 
 Response:
+
 ```
 {
     "username": str (Измененное имя),
@@ -193,6 +202,7 @@ Response:
 <br/>
 
 Requset:
+
 ```
 {
     "user": {
@@ -201,7 +211,6 @@ Requset:
     }
 }
 ```
-
 
 <br/>
 <hr/>
@@ -218,6 +227,7 @@ Requset:
 <br/>
 
 Response:
+
 ```
 {
     "access_token": "your_acces_token"
@@ -227,6 +237,7 @@ Response:
 <br/>
 
 Requset:
+
 ```
 {
     "user": {
@@ -236,7 +247,6 @@ Requset:
     }
 }
 ```
-
 
 <br/>
 <hr/>
@@ -253,6 +263,7 @@ Requset:
 
 
 Response:
+
 ```
 {
     "access_token": "your_acces_token"
@@ -262,6 +273,7 @@ Response:
 <br/>
 
 Requset:
+
 ```
 {
     "user": {
@@ -271,6 +283,38 @@ Requset:
 }
 ```
 
+<br/>
+<hr/>
+
+<h3>
+    api_url/user/logout/
+</h3>
+<h4>
+    Отвечает за выход пользователя из системы.
+</h4>
+
+<br/>
+
+
+Response:
+
+```
+{
+    "detail": "Вы успешно вышли из системы."
+    HTTP/1.1 200 OK
+}
+```
+
+<br/>
+
+Requset:
+
+```
+{
+    Cookie: token="your_token"
+    Authorization: Bearer "your_token"
+}
+```
 
 <br/>
 <hr/>
@@ -286,6 +330,7 @@ Requset:
 <br/>
 
 Headers:
+
 ```
 {
     Cookie: token="your_token"
@@ -296,6 +341,7 @@ Headers:
 <br/>
 
 Response:
+
 ```
 {
     "access_token": "your_acces_token"
@@ -317,6 +363,7 @@ Response:
 <br/>
 
 Response:
+
 ```
 {
     url: ссылка для сброса пароля
@@ -326,12 +373,12 @@ Response:
 <br/>
 
 Requset:
+
 ```
 {
     "email": str (Email на который будет отправленна ссылка для сброса)
 }
 ```
-
 
 <br/>
 <hr/>
@@ -347,6 +394,7 @@ Requset:
 <br/>
 
 Response:
+
 ```
 {
     'detail': 'Пароль был сброшен'
@@ -357,13 +405,13 @@ Response:
 <br/>
 
 Requset:
+
 ```
 {
     "new_password": str,
     "confirm_password": str
 }
 ```
-
 
 <br/>
 <hr/>
@@ -378,5 +426,5 @@ Requset:
 
 
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=d179b8&height=90&section=footer"/>
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=dd6ee0&height=80&section=footer"/>
 </p>
