@@ -14,3 +14,8 @@ class Archive(models.Model):
     class Meta:
         verbose_name = 'Архив'
         verbose_name_plural = 'Архив'
+
+
+class ApiKey(models.Model):
+    key = models.CharField(max_length=100)
+    requests_remaining = models.IntegerField(default=250)

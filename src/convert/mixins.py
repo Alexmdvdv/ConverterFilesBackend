@@ -8,8 +8,8 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from config import settings
-from config.settings import API_KEY
-from src.convert.models import Archive
+from src.convert.utils import get_next_api_key
+from src.convert.models import Archive, ApiKey
 
 
 class FileUploadMixin:
@@ -18,7 +18,7 @@ class FileUploadMixin:
         file_to = request.data['to']
         file_serializer = serializer_class(data=request.data)
         if file_serializer:  # забыл протестить с .verify() после фиксов, но вообще он возвращал False
-            uploaded_file = request.FILES['file']
+            uploaded_file = request.FILES['file_path']
             file_url = self.convert_file(uploaded_file, file_to)
             if file_url:
                 if request.user.is_authenticated:
@@ -64,10 +64,26 @@ class FileUploadMixin:
             temp_file.write(file.read())
             temp_file_path = temp_file.name
 
-        convertapi.api_secret = API_KEY
+        api_key = get_next_api_key()
+
+        if not api_key:
+            return None
+
+        convertapi.api_secret = api_key
         result = convertapi.convert(file_to, {'File': temp_file_path})
         file_url = result.response['Files'][0]['Url']
+
+        try:
+            api_key_obj = ApiKey.objects.get(key=api_key)
+            api_key_obj.requests_remaining -= 1
+            api_key_obj.save()
+
+        except ApiKey.DoesNotExist:
+            return None
 
         os.remove(temp_file_path)
 
         return file_url
+
+
+
