@@ -27,7 +27,7 @@ class FileUploadMixin:
         if file_url:
             if request.user.is_authenticated:
                 file_name = os.path.basename(file_url)
-                file_path = os.path.join(Archive.file_path.field.upload_to, file_name)
+                file_path = os.path.join(Archive.file.field.upload_to, file_name)
 
                 response = requests.get(file_url)
                 if response.status_code == 200:
@@ -39,7 +39,7 @@ class FileUploadMixin:
 
                     archive_instance = Archive(
                         user=user,
-                        file_path=file_path,
+                        file=file_path,
                         file_name=file_name,
                         previous_format=file.name.split('.')[-1],
                         current_format=file_name.split('.')[-1]

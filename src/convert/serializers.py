@@ -5,7 +5,7 @@ from src.convert.models import Archive
 class FilePostAuthSerializer(serializers.ModelSerializer):
     class Meta:
         model = Archive
-        fields = ('user', 'file_path')
+        fields = ('user', 'file')
 
 
 class FilePostUnauthSerializer(serializers.Serializer):

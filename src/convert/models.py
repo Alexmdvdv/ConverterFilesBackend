@@ -4,7 +4,7 @@ from config import settings
 
 class Archive(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Пользователь')
-    file_path = models.FileField(upload_to="file/", verbose_name='Путь файла')
+    file = models.FileField(upload_to="file/", verbose_name='Путь файла')
     file_name = models.CharField(max_length=20, blank=True, verbose_name='Имя файла')
     previous_format = models.CharField(max_length=20, blank=True, verbose_name='Предыдущий формат')
     current_format = models.CharField(max_length=20, blank=True, verbose_name='Текущий формат')
