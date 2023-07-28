@@ -19,3 +19,7 @@ class Archive(models.Model):
 class ApiKey(models.Model):
     key = models.CharField(max_length=100)
     requests_remaining = models.IntegerField(default=250)
+
+    class Meta:
+        verbose_name = 'Ключи'
+        verbose_name_plural = 'Ключи'
