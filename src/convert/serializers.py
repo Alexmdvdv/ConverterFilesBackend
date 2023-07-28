@@ -9,7 +9,7 @@ class FilePostAuthSerializer(serializers.ModelSerializer):
 
 
 class FilePostUnauthSerializer(serializers.Serializer):
-    file_path = serializers.FileField()
+    file = serializers.FileField()
     to = serializers.CharField(max_length=50)
 
 
