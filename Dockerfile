@@ -11,6 +11,9 @@ RUN apk add gcc libc-dev libffi-dev jpeg-dev zlib-dev libjpeg
 RUN pip install --upgrade pip
 
 COPY ./requirements.txt .
+COPY ./entrypoint.sh .
+
+RUN chmod +x entrypoint.sh
 
 RUN pip install -r requirements.txt
 
