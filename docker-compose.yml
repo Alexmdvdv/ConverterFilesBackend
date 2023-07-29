@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.7'
 
 services:
   web:
@@ -8,6 +8,8 @@ services:
     image: convert_files
     ports:
       - "8000:8000"
+    entrypoint:
+      - ./entrypoint.sh
     volumes:
       - ./config:/app/config
       - ./media:/app/media
@@ -18,3 +20,15 @@ services:
     environment:
       - DEBUG=False
       - DATABASE_URL=sqlite:////app/db.sqlite3
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+    volumes:
+      - ./nginx/certs:/etc/ssl/certs
