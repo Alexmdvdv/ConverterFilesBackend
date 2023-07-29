@@ -12,7 +12,13 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    # 'localhost',
+    '0.0.0.0',
+    'localhost',
+    '172.16.16.4',
+    '212.113.122.53',
+    '1627461-cg09372.twc1.net',
+    'api.eelisey.store',
+    'eelisey.store',
 ]
 
 INSTALLED_APPS = [
@@ -151,7 +157,7 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'https://eelisey.ru',
-
+    'https://eelisey.store',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
