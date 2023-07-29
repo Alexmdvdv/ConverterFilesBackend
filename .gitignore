@@ -198,3 +198,5 @@ pyrightconfig.json
 *.sdc
 *.sxc
 *.html
+
+*/certs
