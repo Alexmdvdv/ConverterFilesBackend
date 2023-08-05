@@ -1,3 +1,4 @@
+wheel
 asgiref==3.7.2
 attrs==23.1.0
 certifi==2023.5.7
@@ -13,11 +14,13 @@ idna==3.4
 inflection==0.5.1
 jsonschema==4.17.3
 pyrsistent==0.19.3
-python-dotenv==1.0.0
+python-dotenv
 pytz==2023.3
-PyYAML==6.0
-requests==2.31.0
+PyYAML
+requests
 sqlparse==0.4.4
 typing_extensions==4.6.3
 uritemplate==4.1.1
-urllib3==2.0.2
+urllib3
+gunicorn
+tzdata

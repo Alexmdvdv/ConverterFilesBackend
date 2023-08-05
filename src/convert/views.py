@@ -40,8 +40,7 @@ class FileDownloadView(View):
 
     def get(self, request, file_id):
         try:
-            file_field = Archive.objects.get(
-                id=file_id).file_path
+            file_field = Archive.objects.get(id=file_id).file
             file_path = default_storage.path(file_field.name)
 
             with open(file_path, 'rb') as file:
@@ -64,7 +63,7 @@ class FileDeleteView(APIView):
     def delete(self, request, pk):
         try:
             instance = Archive.objects.get(pk=pk)
-            file_path = os.path.join(MEDIA_ROOT, instance.file_path.path)
+            file_path = os.path.join(MEDIA_ROOT, instance.file.path)
 
             if os.path.exists(file_path):
                 os.remove(file_path)
