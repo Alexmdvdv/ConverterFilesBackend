@@ -1,6 +1,6 @@
 from django.urls import path
-from src.oauth.views import UpdateUserView, RegisterView, LoginView, PasswordResetAPIView, \
-    PasswordResetConfirmAPIView, TokenRefreshView, LogoutView
+from src.oauth.mixins import TokenRefreshView, PasswordResetConfirmAPIView, EmailConfirmationView
+from src.oauth.views import UpdateUserView, RegisterView, LoginView, PasswordResetAPIView, LogoutView
 
 urlpatterns = [
     path('update/', UpdateUserView.as_view()),
@@ -10,5 +10,6 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name="token"),
     path('password/reset/', PasswordResetAPIView.as_view()),
     path('password/reset/confirm/<uidb64>/<token>/', PasswordResetConfirmAPIView.as_view(),
-         name='password_reset_confirm')
+         name='password_reset_confirm'),
+    path('confirm/<str:confirmation_token>/', EmailConfirmationView.as_view(), name='email_confirm'),
 ]

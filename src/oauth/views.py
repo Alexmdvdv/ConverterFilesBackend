@@ -1,8 +1,9 @@
+import uuid
+
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from django.contrib.auth.tokens import default_token_generator
@@ -10,16 +11,13 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.conf import settings
 from django.utils import timezone
-from datetime import timedelta
 
-from src.oauth.mixins import TokenCookieMixin
+from src.oauth.utils import TokenCookieMixin, get_info_user, get_info_ip, get_token, \
+    send_registration_confirmation_email
 from src.oauth.models import User
 from src.oauth.serializers import (
     UserRegistrationSerializer, UserLoginSerializer, UserUpdateSerializer,
-    PasswordResetSerializer, PasswordResetConfirmSerializer, UserSerializer)
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
-
-JWT_Auth = JWTAuthentication()
+    PasswordResetSerializer)
 
 
 class RegisterView(TokenCookieMixin, APIView):
@@ -27,21 +25,23 @@ class RegisterView(TokenCookieMixin, APIView):
 
     def post(self, request):
         user_data = request.data.get('user', {})
-        serializer = UserRegistrationSerializer(data=user_data)
+        user_info = get_info_user(get_info_ip(request)).get('user_info')
+
+        serializer = UserRegistrationSerializer(data={**user_data, **user_info})
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        refresh_token = RefreshToken.for_user(user)
-        access_token = refresh_token.access_token
-        refresh_token.verify()
+        confirmation_token = str(uuid.uuid4())
+        send_registration_confirmation_email(user.email, confirmation_token)
 
-        user_dto = UserSerializer(user).data
+        token = get_token(user)
 
         response = Response(
-            {"access_token": str(access_token), 'user': user_dto},
+            {"access_token": str(token.get("access_token")), 'user': token.get("user_dto")},
             status=status.HTTP_201_CREATED
         )
-        self.set_token_cookie(response, refresh_token)
+
+        self.set_token_cookie(response, token.get("refresh_token"))
 
         return response
 
@@ -55,17 +55,16 @@ class LoginView(TokenCookieMixin, APIView):
         serializer.is_valid(raise_exception=True)
 
         user = serializer.validated_data['user']
-        refresh_token = RefreshToken.for_user(user)
-        access_token = refresh_token.access_token
-        refresh_token.verify()
+        if not user.is_confirmed:
+            return Response({"message": "Email пользователя не подтвержден"}, status=status.HTTP_403_FORBIDDEN)
 
-        user_dto = UserSerializer(user).data
+        token = get_token(user)
 
         response = Response(
-            {"access_token": str(access_token), 'user': user_dto},
+            {"access_token": str(token.get("access_token")), 'user': token.get("user_dto")},
             status=status.HTTP_201_CREATED
         )
-        self.set_token_cookie(response, refresh_token)
+        self.set_token_cookie(response, token.get("refresh_token"))
 
         return response
 
@@ -78,11 +77,8 @@ class LogoutView(APIView):
         refresh_token = request.COOKIES.get('token')
 
         if refresh_token:
-            try:
-                token = RefreshToken(refresh_token)
-                token.blacklist()
-            except Exception:
-                pass
+            token = RefreshToken(refresh_token)
+            token.blacklist()
 
         response = Response({'detail': 'Вы успешно вышли из системы'}, status=status.HTTP_200_OK)
         response.delete_cookie('token')
@@ -103,37 +99,6 @@ class UpdateUserView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class TokenRefreshView(TokenCookieMixin, APIView):
-    permission_classes = [AllowAny]
-
-    def get(self, request):
-        token = request.COOKIES.get('token')
-
-        if not token:
-            return Response({'error': 'Refresh token не предоставлен'}, status=400)
-
-        try:
-            refresh_token = RefreshToken(token)
-            access_token = refresh_token.access_token
-            refresh_token.verify()
-
-            user = JWT_Auth.get_user(access_token)
-            user_dto = UserSerializer(user).data
-
-            response = Response(
-                {"access_token": str(access_token), 'user': user_dto},
-                status=status.HTTP_201_CREATED
-            )
-            self.set_token_cookie(response, refresh_token)
-            return response
-
-        except InvalidToken:
-            return Response({'error': 'Недействительный refresh token'}, status=400)
-
-        except TokenError:
-            return Response({'error': 'Ошибка при обработке токена'}, status=400)
 
 
 class PasswordResetAPIView(APIView):
@@ -158,7 +123,6 @@ class PasswordResetAPIView(APIView):
             reset_url = request.build_absolute_uri(reset_url)
 
             user.password_reset_token = timezone.localtime()
-            print(timezone.localtime())
             user.save()
 
             subject = 'Запрос на сброс пароля'
@@ -166,39 +130,5 @@ class PasswordResetAPIView(APIView):
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
 
             return Response({'detail': 'Email для сброса пароля был отправлен'}, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class PasswordResetConfirmAPIView(APIView):
-    permission_classes = [AllowAny]
-
-    @staticmethod
-    def post(request, uidb64, token):
-        serializer = PasswordResetConfirmSerializer(data=request.data)
-        if serializer.is_valid():
-            try:
-                uid = int(uidb64)
-                user = User.objects.get(pk=uid)
-            except (ValueError, User.DoesNotExist):
-                return Response({'detail': 'Недействительный пользователь или токен'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-            if default_token_generator.check_token(user, token):
-                token_created = user.password_reset_token
-                time_difference = timezone.localtime() - token_created
-                expiration_time = timedelta(hours=1)
-
-                if time_difference <= expiration_time:
-                    new_password = serializer.validated_data.get(
-                        'new_password')
-                    user.set_password(new_password)
-                    user.save()
-
-                    return Response({'detail': 'Пароль был сброшен'}, status=status.HTTP_200_OK)
-                else:
-                    return Response({'detail': 'Ссылка для сброса пароля истекла'}, status=status.HTTP_400_BAD_REQUEST)
-
-            return Response({'detail': 'Недействительный пользователь или токен'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

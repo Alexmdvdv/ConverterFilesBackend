@@ -10,17 +10,17 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-
     class Meta:
         model = User
-        fields = ['username', 'password', 'email']
+        fields = ['username', 'email', 'password', 'country', 'city', 'timezone']
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User.objects.create(**validated_data)
+        password = validated_data.get('password')
+        validated_data['last_login'] = None
+        user = User.objects.create_user(**validated_data)
         user.set_password(password)
         user.save()
+
         return user
 
 

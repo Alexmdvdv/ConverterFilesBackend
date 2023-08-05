@@ -3,6 +3,7 @@ from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,9 +12,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    # 'localhost',
-]
+ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'corsheaders',
@@ -48,7 +47,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS':  [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -172,9 +171,9 @@ CORS_ALLOW_HEADERS = [
 ]
 
 LANGUAGE_CODE = 'ru'
-TIME_ZONE = 'Asia/Yekaterinburg'
-
 USE_I18N = True
+
+TIME_ZONE = 'Asia/Yekaterinburg'
 USE_TZ = True
 
 STATIC_URL = 'static/'
@@ -183,13 +182,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
-EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = os.getenv("EMAIL_PORT")
-
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 JWT_AUTH_COOKIE = "token"
 JWT_AUTH_COOKIE_HTTP_ONLY = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_FILE_PATH = '/app-messages'
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = os.getenv("EMAIL_PORT")

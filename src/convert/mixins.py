@@ -1,6 +1,7 @@
 import os
 import mimetypes
 import tempfile
+
 import requests
 import convertapi
 
@@ -15,48 +16,49 @@ from src.convert.models import Archive, ApiKey
 class FileUploadMixin:
 
     def process_file(self, request, serializer_class):
+
         file_to = request.data['to']
+        file_serializer = serializer_class(data=request.data)
+        if file_serializer.is_valid():
 
-        # я убрал эту проверку иначе придется переделывать некоторые вещи
-        # file_serializer = serializer_class(data=request.data)
-        # if file_serializer:
+            file = request.FILES['file_path']
+            name = file.name
+            file_url = self.convert_file(file, file_to)
 
-        file = request.FILES['file']
-        file_url = self.convert_file(file, file_to)
+            if file_url:
+                if request.user.is_authenticated:
+                    file_name = os.path.basename(file_url)
+                    file_path = os.path.join(Archive.file_path.field.upload_to, file_name)
 
-        if file_url:
-            if request.user.is_authenticated:
-                file_name = os.path.basename(file_url)
-                file_path = os.path.join(Archive.file_path.field.upload_to, file_name)
+                    response = requests.get(file_url)
+                    if response.status_code == 200:
+                        with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb') as file:
+                            file.write(response.content)
 
-                response = requests.get(file_url)
-                if response.status_code == 200:
-                    with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb') as file:
-                        file.write(response.content)
+                        user = request.user
+                        current_format = file.name
 
-                    user = request.user
-                    file_name = os.path.splitext(file.name)[0]
+                        archive_instance = Archive(
+                            user=user,
+                            name=name.split('.')[0],
+                            file_path=file_path,
+                            file_name=file_name,
+                            previous_format=name.split('.')[-1],
+                            current_format=current_format.split('.')[-1],
+                        )
 
-                    archive_instance = Archive(
-                        user=user,
-                        file_path=file_path,
-                        file_name=file_name,
-                        previous_format=file.name.split('.')[-1],
-                        current_format=file_name.split('.')[-1]
-                    )
+                        archive_instance.save()
 
-                    archive_instance.save()
-
-                    return Response({'file_url': file_url}, status=status.HTTP_200_OK)
+                        return Response({'file_url': file_url}, status=status.HTTP_200_OK)
+                    else:
+                        return Response({'error': 'Не удалось загрузить файл'},
+                                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 else:
-                    return Response({'error': 'Не удалось загрузить файл'},
-                                    status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    return Response({'file_url': file_url}, status=status.HTTP_200_OK)
             else:
-                return Response({'file_url': file_url}, status=status.HTTP_200_OK)
+                return Response({'error': 'Не удалось обработать файл'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
-            return Response({'error': 'Не удалось обработать файл'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        # else:
-            # return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
     def convert_file(file, file_to):
