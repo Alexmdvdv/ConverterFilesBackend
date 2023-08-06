@@ -12,7 +12,8 @@ from django.urls import reverse
 from django.conf import settings
 from django.utils import timezone
 
-from src.oauth.utils import TokenCookieMixin, get_info_user, get_info_ip, get_token, \
+from src.oauth.mixins import TokenCookieMixin
+from src.oauth.utils import get_info_user, get_info_ip, get_token, \
     send_registration_confirmation_email
 from src.oauth.models import User
 from src.oauth.serializers import (
@@ -20,7 +21,7 @@ from src.oauth.serializers import (
     PasswordResetSerializer)
 
 
-class RegisterView(TokenCookieMixin, APIView):
+class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -34,16 +35,8 @@ class RegisterView(TokenCookieMixin, APIView):
         confirmation_token = str(uuid.uuid4())
         send_registration_confirmation_email(user.email, confirmation_token)
 
-        token = get_token(user)
-
-        response = Response(
-            {"access_token": str(token.get("access_token")), 'user': token.get("user_dto")},
-            status=status.HTTP_201_CREATED
-        )
-
-        self.set_token_cookie(response, token.get("refresh_token"))
-
-        return response
+        return Response({"message": f"Сообщение с подтверждением отправлено на вашу почту {user_data.get('email')}"},
+                        status=status.HTTP_200_OK)
 
 
 class LoginView(TokenCookieMixin, APIView):

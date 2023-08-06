@@ -11,23 +11,45 @@ from django.utils import timezone
 from datetime import timedelta
 from django.shortcuts import get_object_or_404
 
-from src.oauth.utils import TokenCookieMixin
+from config import settings
+from src.oauth.utils import get_token
 from src.oauth.models import User
 from src.oauth.serializers import (PasswordResetConfirmSerializer, UserSerializer)
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 
-class EmailConfirmationView(APIView):
+class TokenCookieMixin:
+    @staticmethod
+    def set_token_cookie(response, refresh_token):
+        response.set_cookie(
+            key='token',
+            value=str(refresh_token),
+            httponly=True,
+            secure=settings.CSRF_COOKIE_SECURE,
+        )
+
+
+class EmailConfirmationView(TokenCookieMixin, APIView):
     permission_classes = [AllowAny]
 
-    @staticmethod
-    def get(request, confirmation_token):
+    def get(self, request, confirmation_token):
         user = get_object_or_404(User, confirmation_token=confirmation_token)
 
         user.is_confirmed = True
         user.save()
 
-        return Response({"message": "Email успешно подтвержден"}, status=status.HTTP_200_OK)
+        token = get_token(user)
+
+        response = Response(
+            {"access_token": str(token.get("access_token")), 'user': token.get("user_dto")},
+            status=status.HTTP_201_CREATED
+        )
+
+        self.set_token_cookie(response, token.get("refresh_token"))
+
+        return response
+
+
 
 
 class PasswordResetConfirmAPIView(APIView):
