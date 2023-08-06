@@ -33,7 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_confirmed = models.BooleanField(default=False)
     created_at = models.DateField(default=datetime.now)
     updated_at = models.DateField(default=datetime.now)
-    password_reset_token = models.DateTimeField(null=True, blank=True)
+    password_reset_token = models.CharField(max_length=255, blank=True, null=True)
     confirmation_token = models.CharField(max_length=255, blank=True, null=True)
 
     objects = UserManager()

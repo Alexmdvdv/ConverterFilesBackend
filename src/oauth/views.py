@@ -6,16 +6,10 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
-from django.urls import reverse
-from django.conf import settings
-from django.utils import timezone
-
+from src.oauth.models import User
 from src.oauth.mixins import TokenCookieMixin
 from src.oauth.utils import get_info_user, get_info_ip, get_token, \
     send_registration_confirmation_email
-from src.oauth.models import User
 from src.oauth.serializers import (
     UserRegistrationSerializer, UserLoginSerializer, UserUpdateSerializer,
     PasswordResetSerializer)
@@ -33,7 +27,17 @@ class RegisterView(APIView):
         user = serializer.save()
 
         confirmation_token = str(uuid.uuid4())
-        send_registration_confirmation_email(user.email, confirmation_token)
+
+        data = {
+            "email": user.email,
+            "subject": 'Подтверждение регистрации',
+            "confirmation_token": confirmation_token,
+            "email_template": "registration_confirm.html",
+            "link": "email_confirm",
+            "field": "confirmation_token"
+        }
+
+        send_registration_confirmation_email(data)
 
         return Response({"message": f"Сообщение с подтверждением отправлено на вашу почту {user_data.get('email')}"},
                         status=status.HTTP_200_OK)
@@ -102,26 +106,25 @@ class PasswordResetAPIView(APIView):
         serializer = PasswordResetSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data.get('email')
+
             try:
                 user = User.objects.get(email=email)
             except User.DoesNotExist:
                 return Response({'detail': 'Пользователь с указанным адресом электронной почты не существует'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            token = default_token_generator.make_token(user)
-            uid = user.pk
+            confirmation_token = str(uuid.uuid4())
 
-            reset_url = reverse('password_reset_confirm', kwargs={
-                'uidb64': uid, 'token': token})
-            reset_url = request.build_absolute_uri(reset_url)
+            data = {
+                "email": email,
+                "subject": 'Подтверждение сброса пароля',
+                "confirmation_token": confirmation_token,
+                "email_template": "password_reset_confirm.html",
+                "link": "password_reset_confirm",
+                "field": "password_reset_token"
+            }
+            send_registration_confirmation_email(data)
 
-            user.password_reset_token = timezone.localtime()
-            user.save()
-
-            subject = 'Запрос на сброс пароля'
-            message = f'Пожалуйста, нажмите на ссылку ниже, чтобы сбросить пароль:\n\n{reset_url}'
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
-
-            return Response({'detail': 'Email для сброса пароля был отправлен'}, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": f"Сообщение со сбросом пароля отправлено на вашу почту {email}"},
+                status=status.HTTP_200_OK)

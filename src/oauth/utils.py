@@ -52,12 +52,14 @@ def get_token(user):
     return data
 
 
-def send_registration_confirmation_email(to_email, confirmation_token):
-    subject = 'Подтверждение регистрации'
+def send_registration_confirmation_email(data):
+    subject = data.get("subject")
+    email_address = data.get("email")
 
-    confirmation_link = reverse('email_confirm', args=[confirmation_token])
+    confirmation_token = data.get("confirmation_token")
+    confirmation_link = reverse(data.get("link"), args=[confirmation_token])
 
-    email_template = 'registration_confirm.html'
+    email_template = data.get("email_template")
     context = {'confirmation_link': confirmation_link}
     html_message = render_to_string(email_template, context)
 
@@ -65,14 +67,16 @@ def send_registration_confirmation_email(to_email, confirmation_token):
         subject=subject,
         body=strip_tags(html_message),
         from_email=settings.EMAIL_HOST_USER,
-        to=[to_email],
+        to=[email_address],
     )
     email.attach_alternative(html_message, "text/html")
     email.send()
 
     try:
-        user = User.objects.get(email=to_email)
-        user.confirmation_token = confirmation_token
+        user = User.objects.get(email=email_address)
+        field = data["field"]
+        setattr(user, field, confirmation_token)
         user.save()
+
     except User.DoesNotExist:
-        print(f"Пользователь с email '{to_email}' не найден")
+        print(f"Пользователь с email {email_address} не найден")

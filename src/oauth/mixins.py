@@ -1,21 +1,17 @@
+from config import settings
+from django.shortcuts import get_object_or_404
+
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
-from django.contrib.auth.tokens import default_token_generator
-
-from django.utils import timezone
-from datetime import timedelta
-from django.shortcuts import get_object_or_404
-
-from config import settings
 from src.oauth.utils import get_token
 from src.oauth.models import User
 from src.oauth.serializers import (PasswordResetConfirmSerializer, UserSerializer)
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 
 class TokenCookieMixin:
@@ -50,40 +46,27 @@ class EmailConfirmationView(TokenCookieMixin, APIView):
         return response
 
 
-
-
 class PasswordResetConfirmAPIView(APIView):
     permission_classes = [AllowAny]
 
-    @staticmethod
-    def post(request, uidb64, token):
+    def post(self, request, confirmation_token):
         serializer = PasswordResetConfirmSerializer(data=request.data)
-        if serializer.is_valid():
-            try:
-                uid = int(uidb64)
-                user = User.objects.get(pk=uid)
-            except (ValueError, User.DoesNotExist):
-                return Response({'detail': 'Недействительный пользователь или токен'},
-                                status=status.HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            if default_token_generator.check_token(user, token):
-                token_created = user.password_reset_token
-                time_difference = timezone.localtime() - token_created
-                expiration_time = timedelta(hours=1)
+        try:
+            user = User.objects.get(password_reset_token=confirmation_token)
 
-                if time_difference <= expiration_time:
-                    new_password = serializer.validated_data.get(
-                        'new_password')
-                    user.set_password(new_password)
-                    user.save()
+        except User.DoesNotExist:
+            return Response({'detail': 'Недействительный токен'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-                    return Response({'detail': 'Пароль был сброшен'}, status=status.HTTP_200_OK)
-                else:
-                    return Response({'detail': 'Ссылка для сброса пароля истекла'}, status=status.HTTP_400_BAD_REQUEST)
+        new_password = serializer.validated_data.get('new_password')
+        user.set_password(new_password)
+        user.password_reset_token = None
+        user.save()
 
-            return Response({'detail': 'Недействительный пользователь или токен'}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'Пароль был сброшен'}, status=status.HTTP_200_OK)
 
 
 class TokenRefreshView(TokenCookieMixin, APIView):
