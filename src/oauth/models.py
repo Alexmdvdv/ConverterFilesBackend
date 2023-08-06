@@ -48,3 +48,5 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'Пользователя'
         verbose_name_plural = 'Пользователи'
+
+

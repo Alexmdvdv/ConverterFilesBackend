@@ -25,14 +25,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True, write_only=True)
 
     def validate(self, data):
-        username = data.get('username')
+        email = data.get('email')
         password = data.get('password')
-
-        user = authenticate(username=username, password=password)
+        print(email, password)
+        user = authenticate(email=email, password=password)
+        print(user)
         if not user:
             raise serializers.ValidationError('Неверные учетные данные')
 
