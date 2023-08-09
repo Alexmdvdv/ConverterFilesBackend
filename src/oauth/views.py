@@ -22,7 +22,8 @@ class RegisterView(APIView):
         user_data = request.data.get('user', {})
         user_info = get_info_user(get_info_ip(request)).get('user_info')
 
-        serializer = UserRegistrationSerializer(data={**user_data, **user_info})
+        serializer = UserRegistrationSerializer(
+            data={**user_data, **user_info})
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
@@ -30,7 +31,7 @@ class RegisterView(APIView):
 
         data = {
             "email": user.email,
-            "subject": 'Подтверждение регистрации',
+            "subject": 'Завершите регистрацию на eelisey.store',
             "confirmation_token": confirmation_token,
             "email_template": "registration_confirm.html",
             "link": "email_confirm",
@@ -58,7 +59,8 @@ class LoginView(TokenCookieMixin, APIView):
         token = get_token(user)
 
         response = Response(
-            {"access_token": str(token.get("access_token")), 'user': token.get("user_dto")},
+            {"access_token": str(token.get("access_token")),
+             'user': token.get("user_dto")},
             status=status.HTTP_201_CREATED
         )
         self.set_token_cookie(response, token.get("refresh_token"))
@@ -77,7 +79,8 @@ class LogoutView(APIView):
             token = RefreshToken(refresh_token)
             token.blacklist()
 
-        response = Response({'detail': 'Вы успешно вышли из системы'}, status=status.HTTP_200_OK)
+        response = Response(
+            {'detail': 'Вы успешно вышли из системы'}, status=status.HTTP_200_OK)
         response.delete_cookie('token')
 
         return response
