@@ -67,7 +67,7 @@ def send_registration_confirmation_email(data):
         subject=subject,
         body=strip_tags(html_message),
         from_email=settings.EMAIL_HOST_USER,
-        to=[email_address],
+        to=[email_address]
     )
     email.attach_alternative(html_message, "text/html")
     email.send()
