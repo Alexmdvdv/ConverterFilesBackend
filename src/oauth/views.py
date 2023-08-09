@@ -22,7 +22,8 @@ class RegisterView(APIView):
         user_data = request.data.get('user', {})
         user_info = get_info_user(get_info_ip(request)).get('user_info')
 
-        serializer = UserRegistrationSerializer(data={**user_data, **user_info})
+        serializer = UserRegistrationSerializer(
+            data={**user_data, **user_info})
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
@@ -30,7 +31,7 @@ class RegisterView(APIView):
 
         data = {
             "email": user.email,
-            "subject": 'Подтверждение регистрации',
+            "subject": 'Завершите регистрацию на eelisey.store',
             "confirmation_token": confirmation_token,
             "email_template": "registration_confirm.html",
             "link": "email_confirm",
@@ -39,8 +40,10 @@ class RegisterView(APIView):
 
         send_registration_confirmation_email(data)
 
-        return Response({"message": f"Сообщение с подтверждением отправлено на вашу почту {user_data.get('email')}"},
-                        status=status.HTTP_200_OK)
+        return Response({
+            "message": f"Сообщение с подтверждением отправлено на вашу почту: {user_data.get('email')}"},
+            status=status.HTTP_200_OK
+        )
 
 
 class LoginView(TokenCookieMixin, APIView):
@@ -58,7 +61,8 @@ class LoginView(TokenCookieMixin, APIView):
         token = get_token(user)
 
         response = Response(
-            {"access_token": str(token.get("access_token")), 'user': token.get("user_dto")},
+            {"access_token": str(token.get("access_token")),
+             'user': token.get("user_dto")},
             status=status.HTTP_201_CREATED
         )
         self.set_token_cookie(response, token.get("refresh_token"))
@@ -72,6 +76,7 @@ class LogoutView(APIView):
     @staticmethod
     def post(request):
         response = Response({'detail': 'Вы успешно вышли из системы'}, status=status.HTTP_200_OK)
+
         response.delete_cookie('token')
 
         return response
@@ -110,15 +115,17 @@ class PasswordResetAPIView(APIView):
             confirmation_token = str(uuid.uuid4())
 
             data = {
-                "email": user.email,
-                "subject": 'Подтверждение сброса пароля',
+                "email": email,
+                "subject": 'Подтверждение сброса пароля на eelisey.store',
                 "confirmation_token": confirmation_token,
                 "email_template": "password_reset_confirm.html",
                 "link": "password_reset_confirm",
                 "field": "password_reset_token"
             }
+
             send_registration_confirmation_email(data)
 
             return Response(
-                {"message": f"Сообщение со сбросом пароля отправлено на вашу почту {email}"},
-                status=status.HTTP_200_OK)
+                {"message": f"Сообщение со сбросом пароля отправлено на вашу почту: {email}"},
+                status=status.HTTP_200_OK
+            )

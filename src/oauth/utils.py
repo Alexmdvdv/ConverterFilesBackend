@@ -19,7 +19,8 @@ def get_info_ip(request):
     любой рандомный ip адрес,
     например "170.187.137.206"
     """
-    user_ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META.get('REMOTE_ADDR', None)
+    user_ip = request.META.get(
+        'HTTP_X_FORWARDED_FOR', None) or request.META.get('REMOTE_ADDR', None)
 
     if user_ip:
         user_ip = user_ip.split(',')[0].strip()
@@ -57,17 +58,17 @@ def send_registration_confirmation_email(data):
     email_address = data.get("email")
 
     confirmation_token = data.get("confirmation_token")
-    confirmation_link = reverse(data.get("link"), args=[confirmation_token])
+    # confirmation_link = reverse(data.get("link"), args=[confirmation_token])
 
     email_template = data.get("email_template")
-    context = {'confirmation_link': confirmation_link}
+    context = {'confirmation_link': confirmation_token}
     html_message = render_to_string(email_template, context)
 
     email = EmailMultiAlternatives(
         subject=subject,
         body=strip_tags(html_message),
         from_email=settings.EMAIL_HOST_USER,
-        to=[email_address],
+        to=[email_address]
     )
     email.attach_alternative(html_message, "text/html")
     email.send()
