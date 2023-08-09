@@ -71,12 +71,6 @@ class LogoutView(APIView):
 
     @staticmethod
     def post(request):
-        refresh_token = request.COOKIES.get('token')
-
-        if refresh_token:
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-
         response = Response({'detail': 'Вы успешно вышли из системы'}, status=status.HTTP_200_OK)
         response.delete_cookie('token')
 
@@ -116,7 +110,7 @@ class PasswordResetAPIView(APIView):
             confirmation_token = str(uuid.uuid4())
 
             data = {
-                "email": email,
+                "email": user.email,
                 "subject": 'Подтверждение сброса пароля',
                 "confirmation_token": confirmation_token,
                 "email_template": "password_reset_confirm.html",
