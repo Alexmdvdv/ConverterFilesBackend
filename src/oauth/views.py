@@ -40,8 +40,10 @@ class RegisterView(APIView):
 
         send_registration_confirmation_email(data)
 
-        return Response({"message": f"Сообщение с подтверждением отправлено на вашу почту {user_data.get('email')}"},
-                        status=status.HTTP_200_OK)
+        return Response({
+            "message": f"Сообщение с подтверждением отправлено на вашу почту: {user_data.get('email')}"},
+            status=status.HTTP_200_OK
+        )
 
 
 class LoginView(TokenCookieMixin, APIView):
@@ -73,14 +75,16 @@ class LogoutView(APIView):
 
     @staticmethod
     def post(request):
-        refresh_token = request.COOKIES.get('token')
-
-        if refresh_token:
-            token = RefreshToken(refresh_token)
-            token.blacklist()
+        # ! починить или удалить
+        # refresh_token = request.COOKIES.get('token')
+        # if refresh_token:
+        #     token = RefreshToken(refresh_token)
+        #     token.blacklist()
 
         response = Response(
-            {'detail': 'Вы успешно вышли из системы'}, status=status.HTTP_200_OK)
+            {'detail': 'Вы успешно вышли из системы'},
+            status=status.HTTP_200_OK
+        )
         response.delete_cookie('token')
 
         return response
@@ -120,14 +124,16 @@ class PasswordResetAPIView(APIView):
 
             data = {
                 "email": email,
-                "subject": 'Подтверждение сброса пароля',
+                "subject": 'Подтверждение сброса пароля на eelisey.store',
                 "confirmation_token": confirmation_token,
                 "email_template": "password_reset_confirm.html",
                 "link": "password_reset_confirm",
                 "field": "password_reset_token"
             }
+
             send_registration_confirmation_email(data)
 
             return Response(
-                {"message": f"Сообщение со сбросом пароля отправлено на вашу почту {email}"},
-                status=status.HTTP_200_OK)
+                {"message": f"Сообщение со сбросом пароля отправлено на вашу почту: {email}"},
+                status=status.HTTP_200_OK
+            )
