@@ -11,7 +11,8 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 from src.oauth.utils import get_token
 from src.oauth.models import User
-from src.oauth.serializers import (PasswordResetConfirmSerializer, UserSerializer)
+from src.oauth.serializers import (
+    PasswordResetConfirmSerializer, UserSerializer)
 
 
 class TokenCookieMixin:
@@ -37,7 +38,8 @@ class EmailConfirmationView(TokenCookieMixin, APIView):
         token = get_token(user)
 
         response = Response(
-            {"access_token": str(token.get("access_token")), 'user': token.get("user_dto")},
+            {"access_token": str(token.get("access_token")),
+             'user': token.get("user_dto")},
             status=status.HTTP_201_CREATED
         )
 

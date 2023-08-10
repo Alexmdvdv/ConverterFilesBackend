@@ -5,11 +5,11 @@ from src.convert.models import Archive
 class FilePostAuthSerializer(serializers.ModelSerializer):
     class Meta:
         model = Archive
-        fields = ['file_path']
+        fields = ['file']
 
 
 class FilePostUnauthSerializer(serializers.Serializer):
-    file_path = serializers.FileField()
+    file = serializers.FileField()
     to = serializers.CharField(max_length=50)
 
 

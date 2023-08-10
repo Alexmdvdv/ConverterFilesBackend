@@ -20,16 +20,15 @@ class FileUploadMixin:
         file_to = request.data['to']
         file_serializer = serializer_class(data=request.data)
         if file_serializer.is_valid():
-
-            file = request.FILES['file_path']
+            file = request.FILES['file']
             name = file.name
             file_url = self.convert_file(file, file_to)
 
             if file_url:
                 if request.user.is_authenticated:
                     file_name = os.path.basename(file_url)
-                    file_path = os.path.join(Archive.file_path.field.upload_to, file_name)
-
+                    file_path = os.path.join(
+                        Archive.file.field.upload_to, file_name)
                     response = requests.get(file_url)
                     if response.status_code == 200:
                         with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb') as file:
@@ -41,7 +40,7 @@ class FileUploadMixin:
                         archive_instance = Archive(
                             user=user,
                             name=name.split('.')[0],
-                            file_path=file_path,
+                            file=file_path,
                             file_name=file_name,
                             previous_format=name.split('.')[-1],
                             current_format=current_format.split('.')[-1],
@@ -69,7 +68,8 @@ class FileUploadMixin:
             temp_file.write(file.read())
             temp_file_path = temp_file.name
 
-        api_key = get_next_api_key()
+        # api_key = get_next_api_key()
+        api_key = 'k9CbBHPExDzUTjIm'
 
         if not api_key:
             return None
@@ -78,13 +78,13 @@ class FileUploadMixin:
         result = convertapi.convert(file_to, {'File': temp_file_path})
         file_url = result.response['Files'][0]['Url']
 
-        try:
-            api_key_obj = ApiKey.objects.get(key=api_key)
-            api_key_obj.requests_remaining -= 1
-            api_key_obj.save()
+        # try:
+        #     api_key_obj = ApiKey.objects.get(key=api_key)
+        #     api_key_obj.requests_remaining -= 1
+        #     api_key_obj.save()
 
-        except ApiKey.DoesNotExist:
-            return None
+        # except ApiKey.DoesNotExist:
+        #     return None
 
         os.remove(temp_file_path)
 
