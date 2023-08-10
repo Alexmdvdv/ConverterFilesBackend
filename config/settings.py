@@ -155,8 +155,7 @@ AUTHENTICATION_BACKENDS = [
 # CORS_ALLOW_ALL_ORIGINS = True | если решим сделать открытый апи
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://eelisey.ru',
-
+    'https://file-converter.ru',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
