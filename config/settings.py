@@ -11,7 +11,12 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'api.eelisey.store',
+    'eelisey.store',
+]
+
+CSRF_TRUSTED_ORIGINS = ['https://*.eelisey.store', 'https://*.127.0.0.1']
 
 INSTALLED_APPS = [
     'corsheaders',
@@ -155,7 +160,9 @@ AUTHENTICATION_BACKENDS = [
 # CORS_ALLOW_ALL_ORIGINS = True | если решим сделать открытый апи
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://file-converter.ru',
+    'https://eelisey.ru',
+    'https://eelisey.store',
+    'https://api.eelisey.store',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -187,8 +194,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 JWT_AUTH_COOKIE = "token"
 JWT_AUTH_COOKIE_HTTP_ONLY = True
 

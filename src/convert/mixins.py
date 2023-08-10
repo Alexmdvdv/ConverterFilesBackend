@@ -61,15 +61,15 @@ class FileUploadMixin:
 
     @staticmethod
     def convert_file(file, file_to):
-        file_mime_type, _ = mimetypes.guess_type(file.name)
-        file_extension = mimetypes.guess_extension(file_mime_type)
+        file_extension = "." + (file.name).split('.')[-1]
+
+        print(file_extension)
 
         with tempfile.NamedTemporaryFile(dir="media/temp_file/", suffix=file_extension, delete=False) as temp_file:
             temp_file.write(file.read())
             temp_file_path = temp_file.name
 
-        # api_key = get_next_api_key()
-        api_key = 'k9CbBHPExDzUTjIm'
+        api_key = get_next_api_key()
 
         if not api_key:
             return None
@@ -78,13 +78,13 @@ class FileUploadMixin:
         result = convertapi.convert(file_to, {'File': temp_file_path})
         file_url = result.response['Files'][0]['Url']
 
-        # try:
-        #     api_key_obj = ApiKey.objects.get(key=api_key)
-        #     api_key_obj.requests_remaining -= 1
-        #     api_key_obj.save()
+        try:
+            api_key_obj = ApiKey.objects.get(key=api_key)
+            api_key_obj.requests_remaining -= 1
+            api_key_obj.save()
 
-        # except ApiKey.DoesNotExist:
-        #     return None
+        except ApiKey.DoesNotExist:
+            return None
 
         os.remove(temp_file_path)
 

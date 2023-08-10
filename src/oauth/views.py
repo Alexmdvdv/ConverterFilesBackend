@@ -26,7 +26,6 @@ class RegisterView(APIView):
             data={**user_data, **user_info})
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-
         confirmation_token = str(uuid.uuid4())
 
         data = {

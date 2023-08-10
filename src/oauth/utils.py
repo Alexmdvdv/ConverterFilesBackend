@@ -25,7 +25,7 @@ def get_info_ip(request):
     if user_ip:
         user_ip = user_ip.split(',')[0].strip()
 
-    return "170.187.137.206"
+    return user_ip
 
 
 def get_info_user(ip):
