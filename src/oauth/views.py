@@ -30,7 +30,7 @@ class RegisterView(APIView):
 
         data = {
             "email": user.email,
-            "subject": 'Завершите регистрацию на eelisey.store',
+            "subject": 'Завершите регистрацию на file-converter.ru',
             "confirmation_token": confirmation_token,
             "email_template": "registration_confirm.html",
             "link": "email_confirm",
@@ -115,7 +115,7 @@ class PasswordResetAPIView(APIView):
 
             data = {
                 "email": email,
-                "subject": 'Подтверждение сброса пароля на eelisey.store',
+                "subject": 'Подтверждение сброса пароля на file-converter.ru',
                 "confirmation_token": confirmation_token,
                 "email_template": "password_reset_confirm.html",
                 "link": "password_reset_confirm",
