@@ -12,11 +12,17 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'api.file-converter.ru',
+    'file-converter.ru',
     'api.eelisey.store',
     'eelisey.store',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['https://*.eelisey.store', 'https://*.127.0.0.1']
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.file-converter.ru',
+    'https://*.eelisey.store',
+    'https://*.127.0.0.1'
+]
 
 INSTALLED_APPS = [
     'corsheaders',
@@ -163,6 +169,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://eelisey.ru',
     'https://eelisey.store',
     'https://api.eelisey.store',
+    'https://file-converter.ru',
+    'https://api.file-converter.ru',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
