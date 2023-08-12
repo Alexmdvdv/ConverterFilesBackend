@@ -14,6 +14,11 @@
 
 </br>
 
+> - Авторы проекта:
+>     - <a href="https://github.com/Alexmdvdv/">Александр: Backend developer</a>
+>     - <a href="https://github.com/ElishaFlacon/">Елисей: Frontend developer</a>
+
+</br>
 
 
 <h2>
